@@ -1,6 +1,6 @@
 async function fetchProfileData() {
   const url =
-    "https://raw.githubusercontent.com/nathxrz/js-developer-portfolio/refs/heads/projeto-base/data/profile.json";
+    "https://raw.githubusercontent.com/nathxrz/js-developer-portfolio/refs/heads/main/data/profile.json";
   const fetching = await fetch(url);
   return await fetching.json();
 }
