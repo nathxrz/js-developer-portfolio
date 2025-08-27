@@ -1,7 +1,11 @@
+function renderList(elementId, items) {
+  const element = document.getElementById(elementId);
+  element.innerHTML = items.join("");
+}
+
 function updateProfile(profileData) {
   const profilePhoto = document.getElementById("profile.photo");
   profilePhoto.src = profileData.photo;
-  profilePhoto.alt = profileData.name;
 
   const profileName = document.getElementById("profile.name");
   profileName.innerText = profileData.name;
@@ -13,33 +17,65 @@ function updateProfile(profileData) {
 
   const profilePhone = document.getElementById("profile.phone");
   profilePhone.innerText = profileData.phone;
+  profilePhone.href = `tel:${profileData.phone}`;
 
   const profileEmail = document.getElementById("profile.email");
   profileEmail.innerText = profileData.email;
+  profileEmail.href = `mailto:${profileData.email}`;
 }
 
-function updateSkills(profileData) {
-  const skillsList = document.getElementById("skills.list");
+function updateHardSkills(profileData) {
+  const items = profileData.skills.hardSkills.map(
+    (skill) =>
+      `<li> <img src="${skill.logo}" alt="${skill.name}" title="${skill.name}" /> </li>`
+  );
 
-  const items = profileData.skills.hardSkills.map((skill) => {
-    return `
-    <li>
-      <img
-        src="${skill.logo}"
-        alt="${skill.name}"
-        title="${skill.name}"
-      />
-    </li>`;
-  });
-  skillsList.innerHTML = items.join("");
+  renderList("hardSkills.list", items);
 }
 
-function updateProfileInfo(profileData) {
-  updateProfile(profileData);
-  updateSkills(profileData);
+function updateSoftSkills(profileData) {
+  const items = profileData.skills.softSkills.map(
+    (skill) => `<li> ${skill} </li>`
+  );
+
+  renderList("softSkills.list", items);
 }
 
-(async () => {
+function updateLanguages(profileData) {
+  const items = profileData.languages.map((language) => `<li>${language}</li>`);
+  renderList("languages.list", items);
+}
+
+function updatePortfolio(profileData) {
+  const items = profileData.portfolio.map(
+    (project) =>
+      `<li> <h3 class="title github">${project.name}</h3><a href="${project.url}" target="_blank">${project.url}</a></li>`
+  );
+  renderList("portfolio.list", items);
+}
+
+function updateProfessionalExperience(profileData) {
+  const items = profileData.professionalExperience.map(
+    (experience) =>
+      `<li><h3 class="title">${experience.name}</h3><p class="period">${experience.period}</p><p>${experience.description}</p></li>`
+  );
+  renderList("experience.list", items);
+}
+
+async function init() {
   const profileData = await fetchProfileData();
-  updateProfileInfo(profileData);
-})();
+  const updaters = {
+    profile: updateProfile,
+    hardSkills: updateHardSkills,
+    softSkills: updateSoftSkills,
+    languages: updateLanguages,
+    portfolio: updatePortfolio,
+    professionalExperience: updateProfessionalExperience,
+  };
+
+  Object.values(updaters).forEach((updateFunction) =>
+    updateFunction(profileData)
+  );
+}
+
+init();
